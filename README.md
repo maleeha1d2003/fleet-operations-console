@@ -77,3 +77,11 @@ Verified items:
 - The two-column desktop layout displays the vehicle list and Map placeholder side by side.
 - The responsive layout stacks the workspace on smaller screens.
 - The production build completes successfully with `npm run build`.
+
+## Implementation Notes
+
+The vehicle list uses a lightweight manual windowing approach rather than rendering all 400 rows at the same time. The scroll position is used to calculate the visible range, with a small overscan buffer around the viewport. This keeps the full list height available for normal scrolling while limiting the number of mounted vehicle rows.
+
+Vehicle rows are memoized so unchanged rows can avoid unnecessary React re-renders. The implementation uses fixed row heights to keep the window calculations predictable and lightweight.
+
+The Map area is intentionally implemented as a styled placeholder in Task 1. Live vehicle positions and map integration are reserved for the later project tasks.
