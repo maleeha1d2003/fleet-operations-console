@@ -62,3 +62,18 @@ fleet-operations-console/
 ```
 
 Prepared as an original implementation from the supplied Ezitech project brief; no example implementation was copied.
+
+## Task 1 Verification
+
+The Task 1 implementation was tested locally before GitHub deployment.
+
+Verified items:
+
+- The project installs successfully with `npm install`.
+- The development server runs with `npm run dev`.
+- The console is available at `/console`.
+- The seed dataset contains 400 vehicle records.
+- The vehicle list uses windowing logic so only the visible range is rendered.
+- The two-column desktop layout displays the vehicle list and Map placeholder side by side.
+- The responsive layout stacks the workspace on smaller screens.
+- The production build completes successfully with `npm run build`.
