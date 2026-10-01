@@ -85,3 +85,7 @@ The vehicle list uses a lightweight manual windowing approach rather than render
 Vehicle rows are memoized so unchanged rows can avoid unnecessary React re-renders. The implementation uses fixed row heights to keep the window calculations predictable and lightweight.
 
 The Map area is intentionally implemented as a styled placeholder in Task 1. Live vehicle positions and map integration are reserved for the later project tasks.
+
+## Final Verification
+
+Task 1 was rechecked on October 1, 2026. The project installs successfully with `npm install`, runs with `npm run dev`, and builds successfully with `npm run build`. The repository contains 400 vehicle records, a windowed vehicle list, a responsive two-column layout, a Map placeholder, client-side routing, and setup instructions.
