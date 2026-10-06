@@ -1,91 +1,122 @@
 # Riverbend Fleet Operations Console
 
-Task 1 of the Ezitech Frontend Development project for Riverbend Logistics.
+Task 2 of the Ezitech Frontend Development project for Riverbend Logistics.
 
 ## Project overview
 
-This task establishes the foundation for a live operations console used by fleet dispatchers. The interface contains a responsive two-column workspace with a virtualised vehicle list containing 400 seed records and a styled map placeholder for later live-position features.
+This project is a live operations console for fleet dispatchers. It contains a responsive two-column workspace with a virtualised list of 400 vehicles and a styled map placeholder. Task 2 adds a mock WebSocket feed that updates vehicle positions every five seconds while preserving object references for unchanged rows so `React.memo` can prevent unnecessary row re-renders.
 
 ## Tech stack
 - Vite
-- React
+- React 18
 - TypeScript
 - React Router
+- Jest
+- React Testing Library
 - CSS
 - JSON seed data
 
 ## Setup
+
 Requirements: Node.js 18 or newer and npm.
 
 Install dependencies:
+
 ```bash
 npm install
 ```
+
 Start the development server:
+
 ```bash
 npm run dev
 ```
-Open the Vite URL, normally `http://localhost:5173/console`.
+
+Open the Vite URL, normally:
+
+```text
+http://localhost:5173/fleet-operations-console/
+```
+
+## Test
+
+Run the automated render-isolation test:
+
+```bash
+npm test
+```
+
+The Jest test verifies that when one vehicle object changes, the unchanged vehicle row is not rendered again.
 
 ## Build
+
 ```bash
 npm run build
 ```
 
-## Windowing approach
-The vehicle list uses fixed-height rows and calculates a visible range from the scroll position. An overscan buffer is added above and below the visible range. The scroll container preserves the full 400-row height through a spacer while only the visible rows are mounted.
+## Live updates
 
-## Seed data
-`data/vehicles.json` contains exactly 400 mock vehicle objects. Each record includes an identifier, registration, driver, status, location, speed, coordinates, and update timestamp.
+`src/utils/mockWebSocket.ts` provides a small WebSocket-like mock using `setInterval`. Every five seconds it emits a position update for every vehicle containing latitude, longitude, speed, and an update timestamp.
 
-## Routing
-React Router provides a clean `/console` route. The root route redirects to `/console`, and unknown routes also redirect to the console.
+`src/context/VehicleUpdatesContext.tsx` owns the live vehicle state and applies updates without replacing objects that did not actually change. This is important because `React.memo` compares the vehicle object reference passed to each row.
 
-## Task 1 scope
-This task focuses on the scaffold, data model, basic layout, virtualization, and routing described in the project brief. Live position updates, filters, sorting, detail panels, offline handling, keyboard navigation, automated tests, performance profiling, and final deployment belong to later tasks.
+## Minimal re-render strategy
+
+Each vehicle row is wrapped in `React.memo` in `src/components/VirtualizedVehicleList.tsx`. The update reducer creates a new object only for vehicles whose live data changed and keeps the existing object reference for unchanged vehicles.
+
+The virtualised list continues to calculate the visible window from the existing scroll position. Live state updates do not manually reset the scroll container, so the current scroll position is preserved.
+
+## Performance logging
+
+`src/utils/performanceLogger.ts` samples animation-frame durations with `requestAnimationFrame`. A performance snapshot is logged to the browser console after each live update batch so frame timing can be inspected with Chrome DevTools.
+
+The Task 2 performance target is a frame time below 16 ms during normal scrolling and live updates. This should be verified in Chrome DevTools on the deployed application.
+
+## Live deployment
+
+GitHub Pages deployment:
+
+```text
+https://maleeha1d2003.github.io/fleet-operations-console/
+```
+
+The Vite base path is configured as `/fleet-operations-console/` and the GitHub Actions workflow builds the project and deploys the `dist` directory to GitHub Pages.
 
 ## Project structure
+
 ```text
 fleet-operations-console/
 ├── data/vehicles.json
 ├── src/
-│   ├── components/Layout.tsx
-│   ├── components/VirtualizedVehicleList.tsx
+│   ├── components/
+│   │   ├── Layout.tsx
+│   │   └── VirtualizedVehicleList.tsx
+│   ├── context/
+│   │   └── VehicleUpdatesContext.tsx
+│   ├── tests/
+│   │   └── VehicleRow.test.tsx
+│   ├── utils/
+│   │   ├── mockWebSocket.ts
+│   │   └── performanceLogger.ts
 │   ├── App.tsx
 │   ├── main.tsx
 │   ├── styles.css
 │   └── types.ts
-├── index.html
+├── jest.config.cjs
+├── jest.setup.ts
+├── tsconfig.jest.json
 ├── package.json
-├── tsconfig*.json
-└── vite.config.ts
+├── vite.config.ts
+└── README.md
 ```
 
-Prepared as an original implementation from the supplied Ezitech project brief; no example implementation was copied.
+## Task 2 verification checklist
 
-## Task 1 Verification
-
-The Task 1 implementation was tested locally before GitHub deployment.
-
-Verified items:
-
-- The project installs successfully with `npm install`.
-- The development server runs with `npm run dev`.
-- The console is available at `/console`.
-- The seed dataset contains 400 vehicle records.
-- The vehicle list uses windowing logic so only the visible range is rendered.
-- The two-column desktop layout displays the vehicle list and Map placeholder side by side.
-- The responsive layout stacks the workspace on smaller screens.
-- The production build completes successfully with `npm run build`.
-
-## Implementation Notes
-
-The vehicle list uses a lightweight manual windowing approach rather than rendering all 400 rows at the same time. The scroll position is used to calculate the visible range, with a small overscan buffer around the viewport. This keeps the full list height available for normal scrolling while limiting the number of mounted vehicle rows.
-
-Vehicle rows are memoized so unchanged rows can avoid unnecessary React re-renders. The implementation uses fixed row heights to keep the window calculations predictable and lightweight.
-
-The Map area is intentionally implemented as a styled placeholder in Task 1. Live vehicle positions and map integration are reserved for the later project tasks.
-
-## Final Verification
-
-Task 1 was rechecked on October 1, 2026. The project installs successfully with `npm install`, runs with `npm run dev`, and builds successfully with `npm run build`. The repository contains 400 vehicle records, a windowed vehicle list, a responsive two-column layout, a Map placeholder, client-side routing, and setup instructions.
+- Mock update feed runs every 5 seconds.
+- Each vehicle receives a live position payload.
+- Vehicle state updates preserve references for unchanged rows.
+- Vehicle rows use `React.memo`.
+- Scroll position is maintained by the existing virtualised scroll container.
+- Performance frame metrics are logged during update batches.
+- Jest test checks that an unchanged row does not re-render when another row changes.
+- Production build completes with `npm run build`.

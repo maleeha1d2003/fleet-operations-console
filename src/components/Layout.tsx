@@ -1,10 +1,9 @@
 import { useMemo } from "react";
 import { VirtualizedVehicleList } from "./VirtualizedVehicleList";
-import type { Vehicle } from "../types";
-import vehiclesData from "../../data/vehicles.json";
+import { useVehicleUpdates } from "../context/VehicleUpdatesContext";
 
 export default function Layout() {
-  const vehicles = vehiclesData as Vehicle[];
+  const { vehicles, lastUpdateAt, connected } = useVehicleUpdates();
 
   const counts = useMemo(
     () =>
@@ -15,9 +14,9 @@ export default function Layout() {
           if (v.status === "Delayed") a.delayed++;
           return a;
         },
-        { total: 0, active: 0, delayed: 0 }
+        { total: 0, active: 0, delayed: 0 },
       ),
-    [vehicles]
+    [vehicles],
   );
 
   return (
@@ -33,7 +32,7 @@ export default function Layout() {
 
         <div className="status-pill">
           <span className="status-dot" />
-          Operations online
+          {connected ? "Live updates · every 5s" : "Updates offline"}
         </div>
       </header>
 
@@ -42,17 +41,21 @@ export default function Layout() {
           <span>Total vehicles</span>
           <strong>{counts.total}</strong>
         </article>
-
         <article className="metric-card">
           <span>En route</span>
           <strong>{counts.active}</strong>
         </article>
-
         <article className="metric-card">
           <span>Delayed</span>
           <strong>{counts.delayed}</strong>
         </article>
       </section>
+
+      <p className="live-update-status" aria-live="polite">
+        {lastUpdateAt
+          ? `Last live position update: ${new Date(lastUpdateAt).toLocaleTimeString()}`
+          : "Waiting for the first live position update..."}
+      </p>
 
       <section className="workspace" aria-label="Fleet workspace">
         <div className="list-panel">
@@ -61,26 +64,17 @@ export default function Layout() {
               <h2>Vehicles</h2>
               <p>Windowed list · {vehicles.length} records</p>
             </div>
-
             <span className="panel-tag">Virtualized</span>
           </div>
-
           <VirtualizedVehicleList vehicles={vehicles} />
         </div>
 
         <aside className="map-panel" aria-label="Map placeholder">
           <div className="map-grid" />
-
           <div className="map-placeholder">
-            <div className="map-icon" aria-hidden="true">
-              ⌖
-            </div>
-
+            <div className="map-icon" aria-hidden="true">⌖</div>
             <h2>Map</h2>
-
-            <p>
-              Live vehicle positions will appear here in a later task.
-            </p>
+            <p>Live vehicle positions will appear here in a later task.</p>
           </div>
         </aside>
       </section>
