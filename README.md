@@ -120,3 +120,20 @@ fleet-operations-console/
 - Performance frame metrics are logged during update batches.
 - Jest test checks that an unchanged row does not re-render when another row changes.
 - Production build completes with `npm run build`.
+
+## Task 3: Filtering, Sorting, and Vehicle Details
+
+### Features Implemented
+
+- **Status filtering:** Filter vehicles by Available, En Route, Delayed, Idle, Offline, or All.
+- **Driver name sorting:** Sort the vehicle list alphabetically in ascending or descending order.
+- **URL synchronization:** Filter and sort selections are synchronized with URL query parameters and restored when the page reloads.
+- **Scroll persistence:** The vehicle list's scroll position is saved in session storage and restored after a reload.
+- **Vehicle detail panel:** Clicking a vehicle opens a sliding side panel containing all available vehicle fields without intentionally resetting the list's scroll position.
+- **Accessibility:** Vehicle rows support keyboard interaction, and the detail panel supports closing with Escape and includes focus management.
+
+### Validation
+
+- Production build completed successfully using `npm run build`.
+- Automated tests passed using `npm test`.
+- Filter, sorting, URL synchronization, scroll restoration, and vehicle detail display were manually checked in the browser.
