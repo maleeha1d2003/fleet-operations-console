@@ -137,3 +137,33 @@ fleet-operations-console/
 - Production build completed successfully using `npm run build`.
 - Automated tests passed using `npm test`.
 - Filter, sorting, URL synchronization, scroll restoration, and vehicle detail display were manually checked in the browser.
+
+## Task 4: Offline Banner, Action Queue, and Keyboard Navigation
+
+### Features
+
+- **Offline detection:** Displays a persistent banner when the browser loses connectivity and updates the connection status.
+- **Action queue:** Stores vehicle inspection actions locally while offline and processes the mock queue after reconnection.
+- **Live update control:** Pauses simulated vehicle position updates while offline and resumes them when connectivity returns.
+- **Keyboard navigation:** Supports Arrow Up and Arrow Down to move through vehicle rows, wraps at both ends, and opens vehicle details with Enter.
+- **Accessibility:** Uses ARIA roles, accessible labels, live regions, and keyboard focus management.
+
+### Testing
+
+Run the automated test suite:
+
+```bash
+npm test
+```
+
+Build the production application:
+
+```bash
+npm run build
+```
+
+The tests cover offline and online transitions, queued inspection actions, keyboard interaction, and accessibility checks using `jest-axe`.
+
+### Implementation note
+
+The vehicle feed and action dispatcher are simulated for demonstration purposes. Inspection actions are not sent to a real backend server.

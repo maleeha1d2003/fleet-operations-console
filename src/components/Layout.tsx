@@ -1,3 +1,4 @@
+import { useOfflineActions } from "../context/OfflineActionContext";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { VirtualizedVehicleList } from "./VirtualizedVehicleList";
@@ -18,6 +19,12 @@ type SortOrder = "asc" | "desc";
 
 export default function Layout() {
   const { vehicles, lastUpdateAt, connected } = useVehicleUpdates();
+ const {
+  isOnline,
+  pendingActions,
+  lastActionMessage,
+  queueInspection,
+} = useOfflineActions();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const initialStatus = searchParams.get("status") ?? "All";
@@ -147,6 +154,24 @@ export default function Layout() {
 
   return (
     <main className="app-shell">
+      {!isOnline && (
+  <div
+    className="offline-banner"
+    role="status"
+    aria-live="assertive"
+    aria-atomic="true"
+  >
+    <strong>You are offline – actions will be saved</strong>
+    <span>
+      {pendingActions.length} pending action
+      {pendingActions.length === 1 ? "" : "s"}
+    </span>
+  </div>
+)}
+
+<div className="sr-only" role="status" aria-live="polite">
+  {lastActionMessage}
+</div>
       <header className="topbar">
         <div>
           <p className="eyebrow">RIVERBEND LOGISTICS</p>
@@ -157,7 +182,11 @@ export default function Layout() {
         </div>
         <div className="status-pill">
           <span className="status-dot" />
-          {connected ? "Live updates · every 5s" : "Updates offline"}
+          {!isOnline
+  ? "Offline"
+  : connected
+    ? "Live updates · every 5s"
+    : "Updates offline"}
         </div>
       </header>
 
@@ -269,6 +298,24 @@ export default function Layout() {
             <p className="detail-intro">
               Full details for {selectedVehicle.driver}
             </p>
+
+            <div className="inspection-actions">
+  <button
+    type="button"
+    className="inspect-button"
+    onClick={() => queueInspection(selectedVehicle.id)}
+  >
+    Mark as inspected
+  </button>
+
+  {pendingActions.some(
+    (action) => action.vehicleId === selectedVehicle.id,
+  ) && (
+    <p className="pending-inspection">
+      Inspection action is waiting to sync.
+    </p>
+  )}
+</div>
 
             <dl className="detail-fields">
               {Object.entries(selectedVehicle).map(([key, value]) => (

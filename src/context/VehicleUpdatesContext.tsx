@@ -1,3 +1,4 @@
+import { useOfflineActions } from "./OfflineActionContext";
 import {
   createContext,
   useContext,
@@ -63,24 +64,36 @@ function applyUpdates(vehicles: Vehicle[], updates: VehicleUpdate[]): Vehicle[] 
 }
 
 export function VehicleUpdatesProvider({ children }: PropsWithChildren) {
+  const { isOnline } = useOfflineActions();
   const [vehicles, setVehicles] = useState<Vehicle[]>(initialVehicles);
   const [lastUpdateAt, setLastUpdateAt] = useState<string | null>(null);
-  const connected = true;
+  const connected = isOnline;
 
-  useEffect(() => {
-    const stopPerformanceLogger = startPerformanceLogger();
+useEffect(() => {
+  return startPerformanceLogger();
+}, []);
 
-    const socket = createMockVehicleWebSocket(initialVehicles, (updates) => {
-      setVehicles((currentVehicles) => applyUpdates(currentVehicles, updates));
+useEffect(() => {
+  if (!isOnline) {
+    return;
+  }
+
+  const socket = createMockVehicleWebSocket(
+    initialVehicles,
+    (updates) => {
+      setVehicles((currentVehicles) =>
+        applyUpdates(currentVehicles, updates),
+      );
       setLastUpdateAt(new Date().toISOString());
       recordUpdatePerformance();
-    }, 5000);
+    },
+    5000,
+  );
 
-    return () => {
-      socket.close();
-      stopPerformanceLogger();
-    };
-  }, []);
+  return () => {
+    socket.close();
+  };
+}, [isOnline]);
 
   const value = useMemo(
     () => ({ vehicles, lastUpdateAt, connected }),
