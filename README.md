@@ -178,7 +178,7 @@ If the test or build step fails, the workflow does not proceed to deployment.
 
 ## Demo Video
 
-**Demo video:** [Add the link to the recorded demonstration here.]
+**Demo video:** [Watch the 30-second demonstration](https://drive.google.com/file/d/1kliehrkW_VTyiFl3qn-BKX_Qn6BwWhp7/view?usp=drive_link)
 
 The demonstration should be approximately 30 seconds and show the main application interface, vehicle filtering or sorting, the vehicle detail panel, live updates, and offline behavior if time permits.
 
