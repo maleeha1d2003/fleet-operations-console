@@ -5,6 +5,10 @@ import { VirtualizedVehicleList } from "./VirtualizedVehicleList";
 import { useVehicleUpdates } from "../context/VehicleUpdatesContext";
 import type { Vehicle, VehicleStatus } from "../types";
 
+const driverCollator = new Intl.Collator(undefined, {
+  sensitivity: "base",
+  numeric: true,
+});
 const STATUSES = [
   "All",
   "Available",
@@ -117,13 +121,10 @@ export default function Layout() {
       (vehicle) => status === "All" || vehicle.status === status,
     );
 
-    result.sort((a, b) => {
-      const comparison = a.driver.localeCompare(b.driver, undefined, {
-        sensitivity: "base",
-        numeric: true,
-      });
-      return sort === "asc" ? comparison : -comparison;
-    });
+result.sort((a, b) => {
+  const comparison = driverCollator.compare(a.driver, b.driver);
+  return sort === "asc" ? comparison : -comparison;
+});
 
     return result;
   }, [vehicles, status, sort]);
