@@ -243,6 +243,6 @@ The map area is a styled placeholder rather than an integrated interactive mappi
 - [x] Statement and line coverage exceed 80%.
 - [x] Production build succeeds.
 - [x] GitHub Actions tests, builds, and deploys the application.
-- [ ] Record and add the demonstration video link.
-- [ ] Measure and document Chrome frame-time performance.
-- [ ] Measure and document mobile Lighthouse scores.
+- [x] Record and add the demonstration video link.
+- [x] Measure and document Chrome frame-time performance.
+- [x] Measure and document mobile Lighthouse scores.
