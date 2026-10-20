@@ -1,29 +1,86 @@
 # Riverbend Fleet Operations Console
 
-Task 2 of the Ezitech Frontend Development project for Riverbend Logistics.
+A responsive fleet management dashboard developed as part of the Ezitech Frontend Development project for Riverbend Logistics.
 
-## Project overview
+**Live application:** https://maleeha1d2003.github.io/fleet-operations-console/
 
-This project is a live operations console for fleet dispatchers. It contains a responsive two-column workspace with a virtualised list of 400 vehicles and a styled map placeholder. Task 2 adds a mock WebSocket feed that updates vehicle positions every five seconds while preserving object references for unchanged rows so `React.memo` can prevent unnecessary row re-renders.
+## Project Overview
 
-## Tech stack
-- Vite
+The Fleet Operations Console provides a live operations interface for fleet dispatchers to monitor vehicles, filter and sort vehicle records, inspect vehicle details, and handle simulated connectivity interruptions.
+
+The application uses React 18, TypeScript, and Vite. It includes 400 vehicle records, a virtualized vehicle list, simulated live updates, performance logging, keyboard navigation, offline action queuing, automated tests, and continuous deployment through GitHub Actions.
+
+## Features
+
+### Vehicle Monitoring and Performance
+
+- Displays 400 vehicle records using a virtualized list.
+- Simulates live vehicle position updates every five seconds.
+- Uses `React.memo` and reference-preserving state updates to reduce unnecessary vehicle row renders.
+- Records animation frame timing metrics for performance inspection.
+- Preserves the vehicle list's scroll position during live updates.
+
+### Filtering, Sorting, and Vehicle Details
+
+- Filters vehicles by status.
+- Sorts drivers alphabetically in ascending or descending order.
+- Synchronizes filter and sorting selections with URL query parameters.
+- Restores the vehicle list's scroll position using session storage.
+- Displays vehicle information in a sliding detail panel.
+- Supports keyboard navigation and accessible panel interactions.
+
+### Offline Support and Accessibility
+
+- Detects browser connectivity changes and displays an offline banner.
+- Queues vehicle inspection actions locally while offline.
+- Processes queued actions through a simulated dispatcher after reconnection.
+- Pauses simulated vehicle updates while offline and resumes them when online.
+- Supports Arrow Up and Arrow Down navigation, including wrapping at list boundaries.
+- Opens vehicle details with Enter and supports accessible keyboard interaction.
+- Includes accessibility tests using `jest-axe`.
+
+### Automated Testing and Deployment
+
+- Uses Jest and React Testing Library for automated testing.
+- Tests vehicle update behavior, mock WebSocket behavior, performance logging, rendering, offline handling, and keyboard interactions.
+- Measures statement, branch, function, and line coverage.
+- Uses GitHub Actions to install dependencies, run tests with coverage, build the production application, and deploy it to GitHub Pages when changes are pushed to `main`.
+
+## Technology Stack
+
 - React 18
 - TypeScript
+- Vite
 - React Router
 - Jest
 - React Testing Library
+- `jest-axe` and `axe-core`
 - CSS
 - JSON seed data
+- GitHub Actions
+- GitHub Pages
 
-## Setup
+## Requirements
 
-Requirements: Node.js 18 or newer and npm.
+Install the following before running the project locally:
 
-Install dependencies:
+- Node.js 22 or a compatible supported version
+- npm
+- Git
+
+## Installation and Setup
+
+Clone the repository:
 
 ```bash
-npm install
+git clone https://github.com/maleeha1d2003/fleet-operations-console.git
+cd fleet-operations-console
+```
+
+Install the project dependencies:
+
+```bash
+npm ci
 ```
 
 Start the development server:
@@ -32,69 +89,123 @@ Start the development server:
 npm run dev
 ```
 
-Open the Vite URL, normally:
+Open the local URL displayed in the terminal. With the current Vite base configuration, the application is normally available at:
 
 ```text
 http://localhost:5173/fleet-operations-console/
 ```
 
-## Test
+## Automated Testing
 
-Run the automated render-isolation test:
+Run the complete Jest test suite:
 
 ```bash
 npm test
 ```
 
-The Jest test verifies that when one vehicle object changes, the unchanged vehicle row is not rendered again.
+Run tests with a code coverage report:
 
-## Build
+```bash
+npm test -- --coverage
+```
+
+The coverage report is generated in the `coverage/` directory, which is excluded from version control.
+
+The latest verified local test run completed with:
+
+- **Test suites:** 5 passed
+- **Tests:** 20 passed
+- **Statement coverage:** 81.19%
+- **Line coverage:** 82.49%
+- **Function coverage:** 87.50%
+- **Branch coverage:** 60.76%
+
+These figures describe the recorded test run and may change as the application and test suite evolve.
+
+## Production Build
+
+Compile TypeScript and create the production build:
 
 ```bash
 npm run build
 ```
 
-## Live updates
+To preview the production build locally:
 
-`src/utils/mockWebSocket.ts` provides a small WebSocket-like mock using `setInterval`. Every five seconds it emits a position update for every vehicle containing latitude, longitude, speed, and an update timestamp.
-
-`src/context/VehicleUpdatesContext.tsx` owns the live vehicle state and applies updates without replacing objects that did not actually change. This is important because `React.memo` compares the vehicle object reference passed to each row.
-
-## Minimal re-render strategy
-
-Each vehicle row is wrapped in `React.memo` in `src/components/VirtualizedVehicleList.tsx`. The update reducer creates a new object only for vehicles whose live data changed and keeps the existing object reference for unchanged vehicles.
-
-The virtualised list continues to calculate the visible window from the existing scroll position. Live state updates do not manually reset the scroll container, so the current scroll position is preserved.
-
-## Performance logging
-
-`src/utils/performanceLogger.ts` samples animation-frame durations with `requestAnimationFrame`. A performance snapshot is logged to the browser console after each live update batch so frame timing can be inspected with Chrome DevTools.
-
-The Task 2 performance target is a frame time below 16 ms during normal scrolling and live updates. This should be verified in Chrome DevTools on the deployed application.
-
-## Live deployment
-
-GitHub Pages deployment:
-
-```text
-https://maleeha1d2003.github.io/fleet-operations-console/
+```bash
+npm run preview
 ```
 
-The Vite base path is configured as `/fleet-operations-console/` and the GitHub Actions workflow builds the project and deploys the `dist` directory to GitHub Pages.
+The generated production files are written to the `dist/` directory.
 
-## Project structure
+## Performance Monitoring
+
+The utility `src/utils/performanceLogger.ts` uses `requestAnimationFrame` to sample animation frame durations. It records the latest frame duration, maximum frame duration, average frame duration, and number of samples.
+
+The metrics can be inspected in the browser console while testing live vehicle updates.
+
+The project performance target is an average frame time of no more than 16 ms during live updates. The actual result must be measured using Chrome DevTools on the running application.
+
+Mobile Lighthouse targets are at least 90 for Performance, Accessibility, and Best Practices. These scores must be measured and recorded separately; they are not inferred from successful tests or builds.
+
+## Continuous Integration and Deployment
+
+The GitHub Actions workflow is located at:
+
+```text
+.github/workflows/deploy.yml
+```
+
+The workflow runs automatically when changes are pushed to the `main` branch. It can also be started manually from the repository's Actions tab.
+
+The deployment process is:
+
+1. Check out the repository.
+2. Set up Node.js.
+3. Install dependencies using `npm ci`.
+4. Run Jest tests with code coverage.
+5. Build the production application.
+6. Upload the `dist/` directory as a GitHub Pages artifact.
+7. Deploy the artifact to GitHub Pages.
+
+If the test or build step fails, the workflow does not proceed to deployment.
+
+**Repository:** https://github.com/maleeha1d2003/fleet-operations-console
+
+**GitHub Actions:** https://github.com/maleeha1d2003/fleet-operations-console/actions
+
+**Live application:** https://maleeha1d2003.github.io/fleet-operations-console/
+
+## Demo Video
+
+**Demo video:** [Add the link to the recorded demonstration here.]
+
+The demonstration should be approximately 30 seconds and show the main application interface, vehicle filtering or sorting, the vehicle detail panel, live updates, and offline behavior if time permits.
+
+Replace the placeholder above with the actual video URL after recording and uploading the demonstration.
+
+## Project Structure
 
 ```text
 fleet-operations-console/
-├── data/vehicles.json
+├── .github/
+│   └── workflows/
+│       └── deploy.yml
+├── data/
+│   └── vehicles.json
 ├── src/
 │   ├── components/
 │   │   ├── Layout.tsx
 │   │   └── VirtualizedVehicleList.tsx
 │   ├── context/
+│   │   ├── OfflineActionContext.tsx
 │   │   └── VehicleUpdatesContext.tsx
 │   ├── tests/
-│   │   └── VehicleRow.test.tsx
+│   │   ├── OfflineAndKeyboard.test.tsx
+│   │   ├── VehicleRow.test.tsx
+│   │   ├── VehicleUpdatesContext.test.ts
+│   │   ├── mockWebSocket.test.ts
+│   │   └── performanceLogger.test.ts
 │   ├── utils/
 │   │   ├── mockWebSocket.ts
 │   │   └── performanceLogger.ts
@@ -102,68 +213,36 @@ fleet-operations-console/
 │   ├── main.tsx
 │   ├── styles.css
 │   └── types.ts
+├── .gitignore
 ├── jest.config.cjs
 ├── jest.setup.ts
-├── tsconfig.jest.json
 ├── package.json
+├── package-lock.json
+├── tsconfig.app.json
+├── tsconfig.jest.json
 ├── vite.config.ts
 └── README.md
 ```
 
-## Task 2 verification checklist
+## Implementation Notes
 
-- Mock update feed runs every 5 seconds.
-- Each vehicle receives a live position payload.
-- Vehicle state updates preserve references for unchanged rows.
-- Vehicle rows use `React.memo`.
-- Scroll position is maintained by the existing virtualised scroll container.
-- Performance frame metrics are logged during update batches.
-- Jest test checks that an unchanged row does not re-render when another row changes.
-- Production build completes with `npm run build`.
+The live vehicle feed is simulated by `src/utils/mockWebSocket.ts`; it does not connect to a real vehicle tracking service.
 
-## Task 3: Filtering, Sorting, and Vehicle Details
+Vehicle inspection actions are stored locally while offline and dispatched through a mock handler after reconnection. The application does not currently submit inspection actions to a production backend.
 
-### Features Implemented
+The map area is a styled placeholder rather than an integrated interactive mapping service.
 
-- **Status filtering:** Filter vehicles by Available, En Route, Delayed, Idle, Offline, or All.
-- **Driver name sorting:** Sort the vehicle list alphabetically in ascending or descending order.
-- **URL synchronization:** Filter and sort selections are synchronized with URL query parameters and restored when the page reloads.
-- **Scroll persistence:** The vehicle list's scroll position is saved in session storage and restored after a reload.
-- **Vehicle detail panel:** Clicking a vehicle opens a sliding side panel containing all available vehicle fields without intentionally resetting the list's scroll position.
-- **Accessibility:** Vehicle rows support keyboard interaction, and the detail panel supports closing with Escape and includes focus management.
+## Verification Checklist
 
-### Validation
-
-- Production build completed successfully using `npm run build`.
-- Automated tests passed using `npm test`.
-- Filter, sorting, URL synchronization, scroll restoration, and vehicle detail display were manually checked in the browser.
-
-## Task 4: Offline Banner, Action Queue, and Keyboard Navigation
-
-### Features
-
-- **Offline detection:** Displays a persistent banner when the browser loses connectivity and updates the connection status.
-- **Action queue:** Stores vehicle inspection actions locally while offline and processes the mock queue after reconnection.
-- **Live update control:** Pauses simulated vehicle position updates while offline and resumes them when connectivity returns.
-- **Keyboard navigation:** Supports Arrow Up and Arrow Down to move through vehicle rows, wraps at both ends, and opens vehicle details with Enter.
-- **Accessibility:** Uses ARIA roles, accessible labels, live regions, and keyboard focus management.
-
-### Testing
-
-Run the automated test suite:
-
-```bash
-npm test
-```
-
-Build the production application:
-
-```bash
-npm run build
-```
-
-The tests cover offline and online transitions, queued inspection actions, keyboard interaction, and accessibility checks using `jest-axe`.
-
-### Implementation note
-
-The vehicle feed and action dispatcher are simulated for demonstration purposes. Inspection actions are not sent to a real backend server.
+- [x] Mock vehicle updates run every five seconds.
+- [x] Vehicle row rendering uses reference-preserving updates and `React.memo`.
+- [x] Vehicle filtering, sorting, and detail panel are implemented.
+- [x] Offline status handling and local inspection action queuing are implemented.
+- [x] Keyboard navigation and accessibility tests are included.
+- [x] Automated test suite passes: 20 tests across 5 suites.
+- [x] Statement and line coverage exceed 80%.
+- [x] Production build succeeds.
+- [x] GitHub Actions tests, builds, and deploys the application.
+- [ ] Record and add the demonstration video link.
+- [ ] Measure and document Chrome frame-time performance.
+- [ ] Measure and document mobile Lighthouse scores.
